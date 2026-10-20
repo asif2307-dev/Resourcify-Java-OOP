@@ -1,88 +1,161 @@
-# Resourcify — Campus Resource Booking & Utilization System
+# Resourcify — Campus Resource Booking & Facility Management System
 
-A desktop Java application developed with standard **Java Swing** demonstrating core **Object-Oriented Programming (OOP)** principles.
-
----
-
-## 📌 Project Overview
-**Resourcify** is a campus resource management and reservation system. It enables students and faculty to browse college resources (labs, seminar halls, classrooms, meeting rooms), check real-time availability, and submit booking requests with conflict prevention. Administrators can review, approve or reject requests, manage campus resources, and analyze resource utilization statistics.
-
----
-
-## 🎯 Key Features
-
-### 1. Authentication & Role-Based Access
-- Secure login supporting multiple roles: `STUDENT`, `FACULTY`, and `ADMIN`.
-- **Quick Demo Fill buttons** on the login screen for rapid presentation and teacher demonstration.
-
-### 2. Student & Faculty Portal (`UserFrame`)
-- **Browse Resources Tab**:
-  - Live keyword search by resource name or location.
-  - Category filtering (Computer Lab, Seminar Hall, Laboratory, Meeting Room, Classroom).
-  - Clean table displaying capacity, location, and availability status.
-- **Booking Dialog**:
-  - Dedicated modal dialog with date input and start/end time slot selection.
-  - Automatic time-conflict validation (prevents double bookings).
-- **My Bookings Tab**:
-  - Full tracking table showing Booking ID, slot, purpose, status (`PENDING`, `APPROVED`, `REJECTED`, `CANCELLED`), and admin remarks.
-  - Action to cancel existing pending or approved bookings.
-
-### 3. Administrator Dashboard (`AdminFrame`)
-- **Booking Requests & Approvals**:
-  - View all incoming requests with applicant information, role, and purpose.
-  - Filter requests by status (`PENDING`, `APPROVED`, `REJECTED`, `CANCELLED`).
-  - One-click **Approve** and **Reject** actions with custom administrative remarks.
-  - Pending requests counter badge.
-- **Resource Management**:
-  - Add new campus resources (ID, name, type, location, capacity).
-  - Toggle resource availability (Available ⟷ Maintenance).
-  - Safe resource deletion (guarded against active bookings).
-- **Utilization & Reports**:
-  - Key metric summary cards: Total Resources, Total Bookings, Pending Approvals, Approved Bookings.
-  - Per-resource utilization report and allocation rate table.
+<p align="center">
+  <img src="https://img.shields.io/badge/Java-17%2B-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java 17+" />
+  <img src="https://img.shields.io/badge/GUI-Java%20Swing%20(Modern%20UI)-2563EB?style=for-the-badge" alt="Java Swing Modern UI" />
+  <img src="https://img.shields.io/badge/Architecture-MVC%20%2F%20OOP-10B981?style=for-the-badge" alt="Architecture" />
+  <img src="https://img.shields.io/badge/Dependencies-Zero%20(Pure%20Java%20SE)-8B5CF6?style=for-the-badge" alt="Zero Dependencies" />
+  <img src="https://img.shields.io/badge/Tests-37%2F37%20Passed-10B981?style=for-the-badge" alt="Tests Passed" />
+</p>
 
 ---
 
-## 💡 OOP Concepts Demonstrated
+## 📌 Overview
 
-| Concept | Implementation in Resourcify |
+**Resourcify** is a modern, enterprise-grade desktop campus resource reservation system engineered with pure **Java SE (Swing & AWT)**. Built from the ground up demonstrating clean **Object-Oriented Programming (OOP)** and **Model-View-Service** architectural principles, Resourcify eliminates manual campus resource contention through automated conflict detection, role-governed reservation pipelines, and facility utilization analytics.
+
+---
+
+## 🎨 Modern UI/UX Design System
+
+Unlike conventional introductory Swing applications with flat grey beveled windows, Resourcify features a custom-built, lightweight **Design System (`UITheme.java`)** that delivers a contemporary SaaS dashboard experience with **zero external JARs**:
+
+* 🌟 **Dual-Pane Hero Login Screen (`LoginFrame`)**:
+  * Deep navy-to-blue gradient banner with brand monogram `[R]` and feature highlights.
+  * Elevated white form card with active focus glow inputs.
+  * One-click demo chip buttons (`Student`, `Faculty`, `Admin`) for rapid login testing.
+* 🛡️ **Executive Top Navbar**:
+  * Dark slate theme (`#0F172A`) across all user and admin views.
+  * Circular user avatar badge rendering user initials color-coded by role (Student: Cyan, Faculty: Emerald, Admin: Purple).
+  * Styled sign-out button with subtle hover feedback.
+* 🏷️ **Status & Availability Pill Badges**:
+  * Dynamic rounded pill renderers for table cells:
+    * `APPROVED` / `Available` ➜ **Emerald Pill** (`#DCFCE7`)
+    * `PENDING` ➜ **Amber Pill** (`#FEF3C7`)
+    * `REJECTED` / `CANCELLED` / `Maintenance` ➜ **Rose Red Pill** (`#FEE2E2`)
+* 📊 **Elevated Admin Metric Cards**:
+  * Visual KPI stat cards on the Admin dashboard featuring bold 26pt metrics and color-coded accent bars.
+* 🪟 **Spacious Tables & Styled Modals**:
+  * 36px table row spacing with zebra striping and custom headers.
+  * Clean, padded modal dialogs for new facility bookings and resource additions.
+
+---
+
+## 🚀 Key Features by Role
+
+### 1. 🎓 Student & Faculty Portal (`UserFrame`)
+* **Browse Resources**:
+  * Real-time search by location or facility name.
+  * Filter by category (*Computer Lab, Seminar Hall, Laboratory, Meeting Room, Classroom*).
+  * Check live capacity and operational availability.
+* **Instant Conflict-Guarded Booking**:
+  * Select facility, date, start time, and end time.
+  * Time-overlap algorithms prevent double bookings and past-date reservations.
+* **My Bookings Dashboard**:
+  * Track reservation lifecycle (`PENDING` ➜ `APPROVED` / `REJECTED` / `CANCELLED`).
+  * View administrator feedback and remarks.
+  * Cancel existing pending or approved requests with automatic resource release.
+
+### 2. ⚡ Administrator Command Center (`AdminFrame`)
+* **Booking Requests & Approvals**:
+  * Centralized queue of all campus requests with applicant details and purpose.
+  * One-click **Approve** and **Reject** actions with custom administrative remarks.
+  * Dynamic pending requests counter.
+* **Resource Management**:
+  * Add new campus facilities with ID, category, location, and capacity.
+  * Toggle availability between **Available** and **Maintenance**.
+  * Guarded deletion preventing removal of resources with active schedules.
+* **Utilization & Analytics Reports**:
+  * Executive overview KPI cards (Total Resources, Total Bookings, Pending, Approved).
+  * Per-facility utilization rates and allocation breakdown table.
+
+---
+
+## 💡 OOP Principles & Architecture
+
+Resourcify implements clean architectural separation between Data, Business Logic, and Presentation:
+
+```
+src/
+└── resourcify/
+    ├── Main.java                      # Application launcher & theme bootstrapper
+    ├── UITheme.java                   # Custom Modern SaaS design system & components
+    │
+    ├── [MODELS]
+    │   ├── User.java                  # User entity with encapsulated credentials & role
+    │   ├── Resource.java              # Campus facility entity with capacity & status
+    │   ├── Booking.java               # Booking model with temporal validation
+    │   ├── Role.java                  # Enum: STUDENT, FACULTY, ADMIN
+    │   └── BookingStatus.java         # Enum: PENDING, APPROVED, REJECTED, CANCELLED
+    │
+    ├── [DATA & SERVICES]
+    │   ├── DataStore.java             # In-memory mock database seeded with realistic data
+    │   └── BookingService.java        # Core business rules, validation, conflict detection
+    │
+    ├── [VIEWS & CONTROLLERS]
+    │   ├── LoginFrame.java            # Dual-pane authentication & demo fill
+    │   ├── UserFrame.java             # Student/Faculty browsing & booking portal
+    │   └── AdminFrame.java            # Admin approval queue & facility management
+    │
+    └── [VERIFICATION]
+        └── ComponentVerificationTest.java # 37-point automated GUI & business logic test suite
+```
+
+| OOP Concept | Implementation Details |
 |---|---|
-| **Encapsulation** | Model classes (`Booking`, `Resource`, `User`) use `private` fields with validated getters and setters. |
-| **Separation of Concerns** | Clear architectural separation between Data Store (`DataStore`), Business Service (`BookingService`), and Presentation Views (`LoginFrame`, `UserFrame`, `AdminFrame`). |
-| **Polymorphism & Roles** | Role-based logic (`Role.STUDENT`, `Role.FACULTY`, `Role.ADMIN`) determining portal access and operational permissions. |
-| **Exception Handling** | Custom validation in `BookingService` throwing `IllegalArgumentException` caught gracefully by Swing UI dialogs to prevent application crashes. |
-| **Collections & Streams** | Dynamic tracking and reporting using Java `List`, lambda expressions, and Streams API. |
+| **Encapsulation** | Strict `private` fields across `User`, `Booking`, and `Resource` with defensive getters, setters, and state guards. |
+| **Separation of Concerns** | `BookingService` handles business logic and validations independently from Swing presentation views. |
+| **Polymorphism & Roles** | Role-based routing dispatching distinct capabilities and views according to `Role`. |
+| **Defensive Exception Handling** | Custom `IllegalArgumentException` validation guarding against time overlaps, negative capacity, and invalid dates. |
+| **Modern Java Streams** | Stream filtering and lambda reductions for dynamic utilization calculations and analytics. |
 
 ---
 
 ## 🔑 Demo Credentials
 
-| Role | Email | Password |
-|---|---|---|
-| **Student** | `student@resourcify.demo` | `student123` |
-| **Faculty** | `faculty@resourcify.demo` | `faculty123` |
-| **Admin** | `admin@resourcify.demo` | `admin123` |
-
-*(Tip: You can also click the quick demo buttons on the login screen to auto-fill these credentials instantly!)*
+| Role | Email | Password | Quick Access |
+|---|---|---|---|
+| **Student** | `student@resourcify.demo` | `student123` | Click **Student** chip on Login screen |
+| **Faculty** | `faculty@resourcify.demo` | `faculty123` | Click **Faculty** chip on Login screen |
+| **Admin** | `admin@resourcify.demo` | `admin123` | Click **Admin** chip on Login screen |
 
 ---
 
-## 🚀 How to Run
+## 🛠️ How to Run
 
-### Requirements
-- **Java SE Development Kit (JDK 17 or higher)**
-- No external dependencies or third-party libraries needed (uses standard Java SE & Swing).
+### Prerequisites
+* **Java Development Kit (JDK 17 or higher)**
+* No build tools (Maven/Gradle) or external libraries required.
 
-### Compilation & Execution
-From the root of the project directory:
+### Option 1: Run via VS Code / IntelliJ (Recommended)
+1. Open the project folder in your IDE.
+2. Open [`Main.java`](src/resourcify/Main.java).
+3. Click the **Run** button right above `public static void main` (or press `Shift + F10` / Play button).
 
-```bash
-# Compile all Java source files into out/ directory
-javac -d out src/resourcify/*.java
+### Option 2: Run via Terminal (PowerShell / Command Prompt)
+Navigate to the `src` directory and run:
 
-# Run the application
-java -cp out resourcify.Main
+```powershell
+# Navigate to the source folder
+cd src
 
-# Run the automated component test suite
-java -cp out resourcify.ComponentVerificationTest
+# Compile all source files
+javac resourcify/*.java
+
+# Run the Resourcify application
+java resourcify.Main
 ```
+
+### Running the Automated Test Suite
+To execute the comprehensive 37-point automated verification suite:
+
+```powershell
+cd src
+java resourcify.ComponentVerificationTest
+```
+*(Expected output: `Passed: 37, Failed: 0, Status: ALL COMPONENTS FUNCTIONAL & VERIFIED!`)*
+
+---
+
+## 📄 License
+Academic PBL Project — Developed for Object-Oriented Programming (OOP) coursework.
