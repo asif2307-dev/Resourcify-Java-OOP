@@ -3,3 +3,5 @@ out/
 .idea/
 .vscode/
 .DS_Store
+bin/
+Thumbs.db
