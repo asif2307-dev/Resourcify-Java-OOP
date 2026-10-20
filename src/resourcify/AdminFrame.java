@@ -31,58 +31,59 @@ public class AdminFrame extends JFrame {
 
     public AdminFrame(User admin) {
         this.admin = admin;
-        setTitle("Resourcify — Administrator Dashboard");
-        setSize(1080, 700);
+        setTitle("Resourcify — Administrator Command Center");
+        setSize(1120, 720);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JPanel root = new JPanel(new BorderLayout(10, 10));
-        root.setBorder(new EmptyBorder(15, 15, 15, 15));
+        JPanel root = new JPanel(new BorderLayout());
+        root.setBackground(UITheme.BG_APP);
 
         // Top Navigation Header
-        JPanel topHeader = new JPanel(new BorderLayout());
-        topHeader.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY),
-                new EmptyBorder(0, 0, 10, 0)
-        ));
+        JPanel topNavbar = UITheme.createNavbar("Administrator Control Center", admin, this::handleLogout);
+        root.add(topNavbar, BorderLayout.NORTH);
 
-        JPanel adminInfo = new JPanel(new GridLayout(2, 1));
-        JLabel titleLabel = new JLabel("Resourcify — Administrator Control Center");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        JLabel adminLabel = new JLabel("Admin: " + admin.getName() + " (" + admin.getEmail() + ")");
-        adminLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        adminLabel.setForeground(Color.DARK_GRAY);
-        adminInfo.add(titleLabel);
-        adminInfo.add(adminLabel);
-        topHeader.add(adminInfo, BorderLayout.WEST);
-
-        JButton logoutBtn = new JButton("Logout");
-        logoutBtn.addActionListener(e -> handleLogout());
-        topHeader.add(logoutBtn, BorderLayout.EAST);
-
-        root.add(topHeader, BorderLayout.NORTH);
+        // Content Area
+        JPanel bodyPanel = new JPanel(new BorderLayout(12, 12));
+        bodyPanel.setBackground(UITheme.BG_APP);
+        bodyPanel.setBorder(new EmptyBorder(16, 20, 16, 20));
 
         // Tabbed Pane
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        tabbedPane.setFont(UITheme.FONT_BOLD);
+        tabbedPane.setBackground(Color.WHITE);
 
         // =========================================================================
         // TAB 1: BOOKING REQUESTS & APPROVALS
         // =========================================================================
-        JPanel bookingPanel = new JPanel(new BorderLayout(10, 10));
-        bookingPanel.setBorder(new EmptyBorder(10, 5, 5, 5));
+        JPanel bookingPanel = new JPanel(new BorderLayout(12, 12));
+        bookingPanel.setBackground(UITheme.BG_CARD);
+        bookingPanel.setBorder(new EmptyBorder(14, 14, 14, 14));
 
         JPanel bookingFilterBar = new JPanel(new BorderLayout());
-        JPanel leftFilter = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
-        leftFilter.add(new JLabel("Filter Status:"));
+        bookingFilterBar.setOpaque(false);
+
+        JPanel leftFilter = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 6));
+        leftFilter.setOpaque(false);
+        JLabel statFilterLbl = new JLabel("Filter Status:");
+        statFilterLbl.setFont(UITheme.FONT_BOLD);
+        statFilterLbl.setForeground(UITheme.TEXT_MAIN);
+        leftFilter.add(statFilterLbl);
+
+        statusFilterCombo.setFont(UITheme.FONT_REGULAR);
+        statusFilterCombo.setBackground(Color.WHITE);
+        statusFilterCombo.setPreferredSize(new Dimension(140, 34));
         leftFilter.add(statusFilterCombo);
-        JButton refreshBookingsBtn = new JButton("Refresh");
+
+        JButton refreshBookingsBtn = UITheme.createSecondaryButton("↻ Refresh");
+        refreshBookingsBtn.setPreferredSize(new Dimension(100, 34));
         leftFilter.add(refreshBookingsBtn);
         bookingFilterBar.add(leftFilter, BorderLayout.WEST);
 
-        pendingCountLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        pendingCountLabel.setForeground(new Color(180, 70, 0));
-        JPanel rightFilter = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
+        pendingCountLabel.setFont(UITheme.FONT_BADGE);
+        pendingCountLabel.setForeground(UITheme.WARNING_TEXT);
+        JPanel rightFilter = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 6));
+        rightFilter.setOpaque(false);
         rightFilter.add(pendingCountLabel);
         bookingFilterBar.add(rightFilter, BorderLayout.EAST);
 
@@ -97,16 +98,22 @@ public class AdminFrame extends JFrame {
             }
         };
         bookingTable = new JTable(bookingModel);
-        bookingTable.setRowHeight(24);
-        bookingTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        bookingPanel.add(new JScrollPane(bookingTable), BorderLayout.CENTER);
+        UITheme.styleTable(bookingTable);
 
-        JPanel bookingActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
-        JButton approveBtn = new JButton("Approve Request");
-        approveBtn.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        JButton rejectBtn = new JButton("Reject Request");
-        bookingActions.add(approveBtn);
+        JScrollPane bookScroll = new JScrollPane(bookingTable);
+        bookScroll.setBorder(BorderFactory.createLineBorder(UITheme.BORDER));
+        bookScroll.getViewport().setBackground(Color.WHITE);
+        bookingPanel.add(bookScroll, BorderLayout.CENTER);
+
+        JPanel bookingActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 6));
+        bookingActions.setOpaque(false);
+        JButton rejectBtn = UITheme.createDangerButton("✕ Reject Request");
+        JButton approveBtn = UITheme.createSuccessButton("✔ Approve Request");
+        approveBtn.setPreferredSize(new Dimension(160, 36));
+        rejectBtn.setPreferredSize(new Dimension(150, 36));
+
         bookingActions.add(rejectBtn);
+        bookingActions.add(approveBtn);
         bookingPanel.add(bookingActions, BorderLayout.SOUTH);
 
         tabbedPane.addTab("Booking Requests", bookingPanel);
@@ -114,12 +121,14 @@ public class AdminFrame extends JFrame {
         // =========================================================================
         // TAB 2: RESOURCE MANAGEMENT
         // =========================================================================
-        JPanel resourcePanel = new JPanel(new BorderLayout(10, 10));
-        resourcePanel.setBorder(new EmptyBorder(10, 5, 5, 5));
+        JPanel resourcePanel = new JPanel(new BorderLayout(12, 12));
+        resourcePanel.setBackground(UITheme.BG_CARD);
+        resourcePanel.setBorder(new EmptyBorder(14, 14, 14, 14));
 
-        JPanel resourceTopBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
-        JButton addResourceBtn = new JButton("+ Add New Resource");
-        addResourceBtn.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        JPanel resourceTopBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 6));
+        resourceTopBar.setOpaque(false);
+        JButton addResourceBtn = UITheme.createPrimaryButton("+ Add New Resource");
+        addResourceBtn.setPreferredSize(new Dimension(180, 34));
         resourceTopBar.add(addResourceBtn);
         resourcePanel.add(resourceTopBar, BorderLayout.NORTH);
 
@@ -132,14 +141,23 @@ public class AdminFrame extends JFrame {
             }
         };
         resourceTable = new JTable(resourceModel);
-        resourceTable.setRowHeight(24);
-        resourceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        resourcePanel.add(new JScrollPane(resourceTable), BorderLayout.CENTER);
+        UITheme.styleTable(resourceTable);
 
-        JPanel resourceActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
-        JButton toggleAvailBtn = new JButton("Toggle Availability");
-        JButton deleteResBtn = new JButton("Delete Resource");
-        JButton refreshResBtn = new JButton("Refresh");
+        JScrollPane resScroll = new JScrollPane(resourceTable);
+        resScroll.setBorder(BorderFactory.createLineBorder(UITheme.BORDER));
+        resScroll.getViewport().setBackground(Color.WHITE);
+        resourcePanel.add(resScroll, BorderLayout.CENTER);
+
+        JPanel resourceActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 6));
+        resourceActions.setOpaque(false);
+        JButton refreshResBtn = UITheme.createSecondaryButton("↻ Refresh");
+        JButton toggleAvailBtn = UITheme.createPrimaryButton("⇄ Toggle Availability");
+        JButton deleteResBtn = UITheme.createDangerButton("🗑 Delete Resource");
+
+        refreshResBtn.setPreferredSize(new Dimension(100, 36));
+        toggleAvailBtn.setPreferredSize(new Dimension(180, 36));
+        deleteResBtn.setPreferredSize(new Dimension(150, 36));
+
         resourceActions.add(refreshResBtn);
         resourceActions.add(toggleAvailBtn);
         resourceActions.add(deleteResBtn);
@@ -150,16 +168,18 @@ public class AdminFrame extends JFrame {
         // =========================================================================
         // TAB 3: UTILIZATION & REPORTS
         // =========================================================================
-        JPanel reportPanel = new JPanel(new BorderLayout(10, 10));
-        reportPanel.setBorder(new EmptyBorder(10, 5, 5, 5));
+        JPanel reportPanel = new JPanel(new BorderLayout(12, 12));
+        reportPanel.setBackground(UITheme.BG_CARD);
+        reportPanel.setBorder(new EmptyBorder(14, 14, 14, 14));
 
-        // Stats Cards Panel
-        JPanel cardsPanel = new JPanel(new GridLayout(1, 4, 15, 0));
-        cardsPanel.setBorder(new EmptyBorder(5, 5, 10, 5));
-        cardsPanel.add(createStatCard("Total Resources", statTotalResources));
-        cardsPanel.add(createStatCard("Total Bookings", statTotalBookings));
-        cardsPanel.add(createStatCard("Pending Requests", statPendingBookings));
-        cardsPanel.add(createStatCard("Approved Bookings", statApprovedBookings));
+        // Modern 4 Stat Cards
+        JPanel cardsPanel = new JPanel(new GridLayout(1, 4, 14, 0));
+        cardsPanel.setOpaque(false);
+        cardsPanel.setBorder(new EmptyBorder(0, 0, 8, 0));
+        cardsPanel.add(UITheme.createStatCard("Total Resources", statTotalResources, UITheme.PRIMARY, "Active campus facilities"));
+        cardsPanel.add(UITheme.createStatCard("Total Bookings", statTotalBookings, UITheme.PURPLE, "Lifetime slot requests"));
+        cardsPanel.add(UITheme.createStatCard("Pending Requests", statPendingBookings, UITheme.WARNING, "Requiring admin review"));
+        cardsPanel.add(UITheme.createStatCard("Approved Bookings", statApprovedBookings, UITheme.SUCCESS, "Confirmed reservations"));
         reportPanel.add(cardsPanel, BorderLayout.NORTH);
 
         utilizationModel = new DefaultTableModel(new Object[]{
@@ -171,17 +191,24 @@ public class AdminFrame extends JFrame {
             }
         };
         utilizationTable = new JTable(utilizationModel);
-        utilizationTable.setRowHeight(24);
-        reportPanel.add(new JScrollPane(utilizationTable), BorderLayout.CENTER);
+        UITheme.styleTable(utilizationTable);
 
-        JPanel reportActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
-        JButton refreshReportBtn = new JButton("Refresh Analytics");
+        JScrollPane utilScroll = new JScrollPane(utilizationTable);
+        utilScroll.setBorder(BorderFactory.createLineBorder(UITheme.BORDER));
+        utilScroll.getViewport().setBackground(Color.WHITE);
+        reportPanel.add(utilScroll, BorderLayout.CENTER);
+
+        JPanel reportActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 6));
+        reportActions.setOpaque(false);
+        JButton refreshReportBtn = UITheme.createSecondaryButton("↻ Refresh Analytics");
+        refreshReportBtn.setPreferredSize(new Dimension(160, 36));
         reportActions.add(refreshReportBtn);
         reportPanel.add(reportActions, BorderLayout.SOUTH);
 
         tabbedPane.addTab("Utilization & Reports", reportPanel);
 
-        root.add(tabbedPane, BorderLayout.CENTER);
+        bodyPanel.add(tabbedPane, BorderLayout.CENTER);
+        root.add(bodyPanel, BorderLayout.CENTER);
         setContentPane(root);
 
         // Listeners for Tab 1
@@ -213,26 +240,6 @@ public class AdminFrame extends JFrame {
         refreshReports();
     }
 
-    private JPanel createStatCard(String label, JLabel valueLabel) {
-        JPanel card = new JPanel(new BorderLayout(5, 5));
-        card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(210, 215, 225), 1),
-                new EmptyBorder(10, 15, 10, 15)
-        ));
-        card.setBackground(new Color(248, 250, 252));
-
-        JLabel titleLbl = new JLabel(label);
-        titleLbl.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        titleLbl.setForeground(Color.DARK_GRAY);
-
-        valueLabel.setFont(new Font("Segoe UI", Font.BOLD, 22));
-        valueLabel.setForeground(new Color(24, 76, 140));
-
-        card.add(titleLbl, BorderLayout.NORTH);
-        card.add(valueLabel, BorderLayout.CENTER);
-        return card;
-    }
-
     private void refreshBookings() {
         bookingModel.setRowCount(0);
         String filter = (String) statusFilterCombo.getSelectedItem();
@@ -261,7 +268,7 @@ public class AdminFrame extends JFrame {
                 });
             }
         }
-        pendingCountLabel.setText("Pending Requests: " + pendingCount);
+        pendingCountLabel.setText("Pending Action Required: " + pendingCount);
     }
 
     private void handleReviewBooking(boolean approve) {
@@ -335,46 +342,64 @@ public class AdminFrame extends JFrame {
 
     private void openAddResourceDialog() {
         JDialog dialog = new JDialog(this, "Add New Campus Resource", true);
-        dialog.setSize(420, 360);
+        dialog.setSize(460, 420);
         dialog.setLocationRelativeTo(this);
-        dialog.setLayout(new BorderLayout(10, 10));
+        dialog.setLayout(new BorderLayout());
 
-        JPanel form = new JPanel(new GridBagLayout());
-        form.setBorder(new EmptyBorder(15, 20, 10, 20));
+        JPanel card = UITheme.createCard();
+        card.setLayout(new GridBagLayout());
         GridBagConstraints g = new GridBagConstraints();
-        g.insets = new Insets(6, 6, 6, 6);
+        g.insets = new Insets(8, 8, 8, 8);
         g.fill = GridBagConstraints.HORIZONTAL;
 
         String nextId = String.format("R%03d", DataStore.RESOURCES.size() + 1);
-        JTextField idField = new JTextField(nextId, 15);
-        JTextField nameField = new JTextField(15);
+        UITheme.ModernTextField idField = new UITheme.ModernTextField(nextId, 15);
+        UITheme.ModernTextField nameField = new UITheme.ModernTextField(15);
         JComboBox<String> typeCombo = new JComboBox<>(new String[]{
                 "Computer Lab", "Seminar Hall", "Laboratory", "Meeting Room", "Classroom", "Auditorium"
         });
-        JTextField locationField = new JTextField(15);
-        JTextField capacityField = new JTextField("30", 15);
+        typeCombo.setFont(UITheme.FONT_REGULAR);
+        typeCombo.setBackground(Color.WHITE);
+        UITheme.ModernTextField locationField = new UITheme.ModernTextField(15);
+        UITheme.ModernTextField capacityField = new UITheme.ModernTextField("30", 15);
 
-        g.gridx = 0; g.gridy = 0; form.add(new JLabel("Resource ID:"), g);
-        g.gridx = 1; form.add(idField, g);
+        g.gridx = 0; g.gridy = 0;
+        JLabel idLbl = new JLabel("RESOURCE ID:"); idLbl.setFont(UITheme.FONT_BOLD); idLbl.setForeground(UITheme.TEXT_MUTED);
+        card.add(idLbl, g);
+        g.gridx = 1; card.add(idField, g);
 
-        g.gridx = 0; g.gridy = 1; form.add(new JLabel("Resource Name:"), g);
-        g.gridx = 1; form.add(nameField, g);
+        g.gridx = 0; g.gridy = 1;
+        JLabel nameLbl = new JLabel("RESOURCE NAME:"); nameLbl.setFont(UITheme.FONT_BOLD); nameLbl.setForeground(UITheme.TEXT_MUTED);
+        card.add(nameLbl, g);
+        g.gridx = 1; card.add(nameField, g);
 
-        g.gridx = 0; g.gridy = 2; form.add(new JLabel("Category / Type:"), g);
-        g.gridx = 1; form.add(typeCombo, g);
+        g.gridx = 0; g.gridy = 2;
+        JLabel catLbl = new JLabel("CATEGORY / TYPE:"); catLbl.setFont(UITheme.FONT_BOLD); catLbl.setForeground(UITheme.TEXT_MUTED);
+        card.add(catLbl, g);
+        g.gridx = 1; card.add(typeCombo, g);
 
-        g.gridx = 0; g.gridy = 3; form.add(new JLabel("Location:"), g);
-        g.gridx = 1; form.add(locationField, g);
+        g.gridx = 0; g.gridy = 3;
+        JLabel locLbl = new JLabel("LOCATION:"); locLbl.setFont(UITheme.FONT_BOLD); locLbl.setForeground(UITheme.TEXT_MUTED);
+        card.add(locLbl, g);
+        g.gridx = 1; card.add(locationField, g);
 
-        g.gridx = 0; g.gridy = 4; form.add(new JLabel("Capacity (People):"), g);
-        g.gridx = 1; form.add(capacityField, g);
+        g.gridx = 0; g.gridy = 4;
+        JLabel capLbl = new JLabel("CAPACITY (SEATS):"); capLbl.setFont(UITheme.FONT_BOLD); capLbl.setForeground(UITheme.TEXT_MUTED);
+        card.add(capLbl, g);
+        g.gridx = 1; card.add(capacityField, g);
 
-        dialog.add(form, BorderLayout.CENTER);
+        JPanel contentWrapper = new JPanel(new BorderLayout());
+        contentWrapper.setBackground(UITheme.BG_APP);
+        contentWrapper.setBorder(new EmptyBorder(16, 16, 8, 16));
+        contentWrapper.add(card, BorderLayout.CENTER);
+        dialog.add(contentWrapper, BorderLayout.CENTER);
 
-        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
-        JButton cancelBtn = new JButton("Cancel");
-        JButton saveBtn = new JButton("Add Resource");
-        saveBtn.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 14));
+        btnPanel.setBackground(UITheme.BG_APP);
+        JButton cancelBtn = UITheme.createSecondaryButton("Cancel");
+        JButton saveBtn = UITheme.createPrimaryButton("+ Add Resource");
+        saveBtn.setPreferredSize(new Dimension(150, 36));
+        cancelBtn.setPreferredSize(new Dimension(90, 36));
 
         cancelBtn.addActionListener(e -> dialog.dispose());
         saveBtn.addActionListener(e -> {

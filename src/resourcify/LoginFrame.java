@@ -3,106 +3,215 @@ package resourcify;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.geom.RoundRectangle2D;
 
 public class LoginFrame extends JFrame {
-    private final JTextField emailField = new JTextField(20);
-    private final JPasswordField passwordField = new JPasswordField(20);
+    private final UITheme.ModernTextField emailField = new UITheme.ModernTextField(20);
+    private final UITheme.ModernPasswordField passwordField = new UITheme.ModernPasswordField(20);
 
     public LoginFrame() {
-        setTitle("Resourcify — Campus Resource Booking System");
-        setSize(500, 440);
+        setTitle("Resourcify — Enterprise Campus Resource Booking");
+        setSize(780, 520);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
 
-        JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
-        mainPanel.setBorder(new EmptyBorder(25, 30, 20, 30));
+        JPanel root = new JPanel(new BorderLayout());
+        root.setBackground(UITheme.BG_APP);
 
-        // Header Section
-        JPanel headerPanel = new JPanel();
-        headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
+        // =====================================================================
+        // LEFT PANEL: BRAND HERO BANNER (DEEP NAVY GRADIENT)
+        // =====================================================================
+        JPanel brandHero = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        JLabel titleLabel = new JLabel("RESOURCIFY");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        titleLabel.setForeground(new Color(24, 76, 140));
+                // Rich Deep Navy to Royal Indigo Gradient
+                GradientPaint gp = new GradientPaint(0, 0, new Color(15, 23, 42), getWidth(), getHeight(), new Color(30, 58, 138));
+                g2.setPaint(gp);
+                g2.fillRect(0, 0, getWidth(), getHeight());
 
-        JLabel subtitleLabel = new JLabel("Campus Resource Booking & Allocation System");
-        subtitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        subtitleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        subtitleLabel.setForeground(Color.DARK_GRAY);
+                // Glowing geometric background accents
+                g2.setColor(new Color(59, 130, 246, 35));
+                g2.fillOval(-30, -30, 180, 180);
+                g2.setColor(new Color(99, 102, 241, 30));
+                g2.fillOval(getWidth() - 110, getHeight() - 130, 200, 200);
 
-        headerPanel.add(titleLabel);
-        headerPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-        headerPanel.add(subtitleLabel);
-        mainPanel.add(headerPanel, BorderLayout.NORTH);
+                g2.dispose();
+            }
+        };
+        brandHero.setOpaque(false);
+        brandHero.setPreferredSize(new Dimension(320, 520));
+        brandHero.setLayout(new BoxLayout(brandHero, BoxLayout.Y_AXIS));
+        brandHero.setBorder(new EmptyBorder(42, 32, 36, 32));
 
-        // Form Section
-        JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createTitledBorder("Sign In"),
-                new EmptyBorder(10, 15, 10, 15)
+        // Modern Logo Monogram Badge [ R ]
+        JPanel logoBadge = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(UITheme.PRIMARY);
+                g2.fill(new RoundRectangle2D.Float(0, 0, 48, 48, 14, 14));
+                g2.setColor(Color.WHITE);
+                g2.setFont(new Font("Segoe UI", Font.BOLD, 26));
+                FontMetrics fm = g2.getFontMetrics();
+                int x = (48 - fm.stringWidth("R")) / 2;
+                int y = ((48 - fm.getHeight()) / 2) + fm.getAscent();
+                g2.drawString("R", x, y);
+                g2.dispose();
+            }
+        };
+        logoBadge.setPreferredSize(new Dimension(48, 48));
+        logoBadge.setMaximumSize(new Dimension(48, 48));
+        logoBadge.setOpaque(false);
+        logoBadge.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel appTitle = new JLabel("RESOURCIFY");
+        appTitle.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        appTitle.setForeground(Color.WHITE);
+        appTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel appTagline = new JLabel("Campus Facility & Resource System");
+        appTagline.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        appTagline.setForeground(new Color(186, 215, 255));
+        appTagline.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel feature1 = createHeroBullet("Automated slot conflict detection");
+        JLabel feature2 = createHeroBullet("Role-governed booking approvals");
+        JLabel feature3 = createHeroBullet("Audited facility utilization reports");
+        JLabel feature4 = createHeroBullet("Real-time campus resource status");
+
+        JLabel versionLbl = new JLabel("Resourcify Enterprise Platform");
+        versionLbl.setFont(UITheme.FONT_SMALL);
+        versionLbl.setForeground(new Color(148, 163, 184));
+        versionLbl.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        brandHero.add(logoBadge);
+        brandHero.add(Box.createRigidArea(new Dimension(0, 14)));
+        brandHero.add(appTitle);
+        brandHero.add(Box.createRigidArea(new Dimension(0, 4)));
+        brandHero.add(appTagline);
+        brandHero.add(Box.createRigidArea(new Dimension(0, 36)));
+        brandHero.add(feature1);
+        brandHero.add(Box.createRigidArea(new Dimension(0, 12)));
+        brandHero.add(feature2);
+        brandHero.add(Box.createRigidArea(new Dimension(0, 12)));
+        brandHero.add(feature3);
+        brandHero.add(Box.createRigidArea(new Dimension(0, 12)));
+        brandHero.add(feature4);
+        brandHero.add(Box.createVerticalGlue());
+        brandHero.add(versionLbl);
+
+        root.add(brandHero, BorderLayout.WEST);
+
+        // =====================================================================
+        // RIGHT PANEL: MODERN LOGIN CARD & DEMO CHIPS
+        // =====================================================================
+        JPanel formContainer = new JPanel(new BorderLayout());
+        formContainer.setBackground(UITheme.BG_APP);
+        formContainer.setBorder(new EmptyBorder(32, 36, 32, 36));
+
+        JPanel formCard = UITheme.createCard();
+        formCard.setLayout(new BoxLayout(formCard, BoxLayout.Y_AXIS));
+
+        JLabel welcomeHeader = new JLabel("Welcome Back");
+        welcomeHeader.setFont(UITheme.FONT_HERO);
+        welcomeHeader.setForeground(UITheme.TEXT_MAIN);
+        welcomeHeader.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel welcomeSub = new JLabel("Sign in with your campus credentials to continue");
+        welcomeSub.setFont(UITheme.FONT_SUBTITLE);
+        welcomeSub.setForeground(UITheme.TEXT_MUTED);
+        welcomeSub.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // Fields
+        JLabel emailLbl = new JLabel("EMAIL ADDRESS");
+        emailLbl.setFont(new Font("Segoe UI", Font.BOLD, 11));
+        emailLbl.setForeground(UITheme.TEXT_MUTED);
+        emailLbl.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        emailField.setAlignmentX(Component.LEFT_ALIGNMENT);
+        emailField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+
+        JLabel passLbl = new JLabel("PASSWORD");
+        passLbl.setFont(new Font("Segoe UI", Font.BOLD, 11));
+        passLbl.setForeground(UITheme.TEXT_MUTED);
+        passLbl.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        passwordField.setAlignmentX(Component.LEFT_ALIGNMENT);
+        passwordField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+
+        // Action Buttons
+        JPanel actionRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        actionRow.setOpaque(false);
+        actionRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        actionRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 42));
+
+        JButton clearBtn = UITheme.createSecondaryButton("Clear");
+        JButton loginBtn = UITheme.createPrimaryButton("Sign In  →");
+        loginBtn.setPreferredSize(new Dimension(130, 38));
+        clearBtn.setPreferredSize(new Dimension(85, 38));
+
+        actionRow.add(clearBtn);
+        actionRow.add(loginBtn);
+
+        // Quick Demo Fill Bar
+        JPanel demoBox = new JPanel();
+        demoBox.setLayout(new BoxLayout(demoBox, BoxLayout.Y_AXIS));
+        demoBox.setOpaque(false);
+        demoBox.setAlignmentX(Component.LEFT_ALIGNMENT);
+        demoBox.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createMatteBorder(1, 0, 0, 0, UITheme.BORDER),
+                new EmptyBorder(14, 0, 0, 0)
         ));
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 8, 8, 8);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        JLabel demoHint = new JLabel("QUICK DEMO ONE-CLICK FILL");
+        demoHint.setFont(new Font("Segoe UI", Font.BOLD, 10));
+        demoHint.setForeground(UITheme.TEXT_MUTED);
 
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 0.3;
-        JLabel emailLbl = new JLabel("Email Address:");
-        emailLbl.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        formPanel.add(emailLbl, gbc);
+        JPanel chipRow = new JPanel(new GridLayout(1, 3, 8, 0));
+        chipRow.setOpaque(false);
+        chipRow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 34));
 
-        gbc.gridx = 1;
-        gbc.weightx = 0.7;
-        emailField.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        formPanel.add(emailField, gbc);
+        JButton studentDemoBtn = UITheme.createChipButton("Student", UITheme.PRIMARY, UITheme.PRIMARY_LIGHT);
+        JButton facultyDemoBtn = UITheme.createChipButton("Faculty", UITheme.SUCCESS, UITheme.SUCCESS_BG);
+        JButton adminDemoBtn = UITheme.createChipButton("Admin", UITheme.PURPLE, UITheme.PURPLE_BG);
 
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.weightx = 0.3;
-        JLabel passLbl = new JLabel("Password:");
-        passLbl.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        formPanel.add(passLbl, gbc);
+        chipRow.add(studentDemoBtn);
+        chipRow.add(facultyDemoBtn);
+        chipRow.add(adminDemoBtn);
 
-        gbc.gridx = 1;
-        gbc.weightx = 0.7;
-        passwordField.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        formPanel.add(passwordField, gbc);
+        demoBox.add(demoHint);
+        demoBox.add(Box.createRigidArea(new Dimension(0, 8)));
+        demoBox.add(chipRow);
 
-        // Buttons
-        JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        JButton clearBtn = new JButton("Clear");
-        JButton loginBtn = new JButton("Login");
-        loginBtn.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        loginBtn.setPreferredSize(new Dimension(90, 30));
-        clearBtn.setPreferredSize(new Dimension(80, 30));
+        // Assemble Form
+        formCard.add(welcomeHeader);
+        formCard.add(Box.createRigidArea(new Dimension(0, 4)));
+        formCard.add(welcomeSub);
+        formCard.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        actionPanel.add(clearBtn);
-        actionPanel.add(loginBtn);
+        formCard.add(emailLbl);
+        formCard.add(Box.createRigidArea(new Dimension(0, 6)));
+        formCard.add(emailField);
+        formCard.add(Box.createRigidArea(new Dimension(0, 14)));
 
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.gridwidth = 2;
-        gbc.insets = new Insets(12, 8, 4, 8);
-        formPanel.add(actionPanel, gbc);
+        formCard.add(passLbl);
+        formCard.add(Box.createRigidArea(new Dimension(0, 6)));
+        formCard.add(passwordField);
+        formCard.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        mainPanel.add(formPanel, BorderLayout.CENTER);
+        formCard.add(actionRow);
+        formCard.add(Box.createRigidArea(new Dimension(0, 16)));
+        formCard.add(demoBox);
 
-        // Demo Quick Fill Footer
-        JPanel demoPanel = new JPanel(new BorderLayout(5, 5));
-        demoPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createTitledBorder("Quick Demo Login (Click to Fill)"),
-                new EmptyBorder(5, 10, 5, 10)
-        ));
+        formContainer.add(formCard, BorderLayout.CENTER);
+        root.add(formContainer, BorderLayout.CENTER);
 
-        JPanel demoButtons = new JPanel(new GridLayout(1, 3, 10, 0));
-        JButton studentDemoBtn = new JButton("Student Demo");
-        JButton facultyDemoBtn = new JButton("Faculty Demo");
-        JButton adminDemoBtn = new JButton("Admin Demo");
-
+        // Listeners
         studentDemoBtn.addActionListener(e -> {
             emailField.setText("student@resourcify.demo");
             passwordField.setText("student123");
@@ -118,14 +227,6 @@ public class LoginFrame extends JFrame {
             passwordField.setText("admin123");
         });
 
-        demoButtons.add(studentDemoBtn);
-        demoButtons.add(facultyDemoBtn);
-        demoButtons.add(adminDemoBtn);
-        demoPanel.add(demoButtons, BorderLayout.CENTER);
-
-        mainPanel.add(demoPanel, BorderLayout.SOUTH);
-
-        // Listeners
         loginBtn.addActionListener(e -> authenticate());
         clearBtn.addActionListener(e -> {
             emailField.setText("");
@@ -133,13 +234,20 @@ public class LoginFrame extends JFrame {
             emailField.requestFocus();
         });
 
-        // Set Login button as default (Enter key triggers it)
         getRootPane().setDefaultButton(loginBtn);
-        setContentPane(mainPanel);
+        setContentPane(root);
 
-        // Pre-fill with Student demo by default for convenience
+        // Default fill
         emailField.setText("student@resourcify.demo");
         passwordField.setText("student123");
+    }
+
+    private static JLabel createHeroBullet(String text) {
+        JLabel label = new JLabel("•  " + text);
+        label.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        label.setForeground(new Color(241, 245, 249)); // High contrast Slate 100
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        return label;
     }
 
     private void authenticate() {

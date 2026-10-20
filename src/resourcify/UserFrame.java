@@ -15,7 +15,7 @@ public class UserFrame extends JFrame {
     // Resource browsing tab components
     private final DefaultTableModel resourceModel;
     private final JTable resourceTable;
-    private final JTextField searchField = new JTextField(15);
+    private final UITheme.ModernTextField searchField = new UITheme.ModernTextField(18);
     private final JComboBox<String> typeFilterCombo = new JComboBox<>(new String[]{
             "All Types", "Computer Lab", "Seminar Hall", "Laboratory", "Meeting Room", "Classroom"
     });
@@ -30,54 +30,61 @@ public class UserFrame extends JFrame {
     public UserFrame(User user) {
         this.user = user;
         setTitle("Resourcify — Campus Resource Portal (" + user.getRole() + ")");
-        setSize(1000, 650);
+        setSize(1040, 680);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JPanel root = new JPanel(new BorderLayout(10, 10));
-        root.setBorder(new EmptyBorder(15, 15, 15, 15));
+        JPanel root = new JPanel(new BorderLayout());
+        root.setBackground(UITheme.BG_APP);
 
-        // Top Navigation Header
-        JPanel topHeader = new JPanel(new BorderLayout());
-        topHeader.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY),
-                new EmptyBorder(0, 0, 10, 0)
-        ));
+        // Modern Top Navbar
+        JPanel topNavbar = UITheme.createNavbar("Campus Resource Booking Portal", user, this::handleLogout);
+        root.add(topNavbar, BorderLayout.NORTH);
 
-        JPanel userInfo = new JPanel(new GridLayout(2, 1));
-        JLabel titleLabel = new JLabel("Campus Resource Booking Portal");
-        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        JLabel userLabel = new JLabel("Logged in as: " + user.getName() + " | Role: " + user.getRole() + " (" + user.getEmail() + ")");
-        userLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        userLabel.setForeground(Color.DARK_GRAY);
-        userInfo.add(titleLabel);
-        userInfo.add(userLabel);
-        topHeader.add(userInfo, BorderLayout.WEST);
+        // Body with Padding
+        JPanel bodyPanel = new JPanel(new BorderLayout(12, 12));
+        bodyPanel.setBackground(UITheme.BG_APP);
+        bodyPanel.setBorder(new EmptyBorder(16, 20, 16, 20));
 
-        JButton logoutBtn = new JButton("Logout");
-        logoutBtn.addActionListener(e -> handleLogout());
-        topHeader.add(logoutBtn, BorderLayout.EAST);
-
-        root.add(topHeader, BorderLayout.NORTH);
-
-        // Tabbed Pane for Navigation
+        // Tabbed Navigation
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        tabbedPane.setFont(UITheme.FONT_BOLD);
+        tabbedPane.setBackground(Color.WHITE);
 
-        // --- TAB 1: BROWSE RESOURCES ---
-        JPanel resourcePanel = new JPanel(new BorderLayout(10, 10));
-        resourcePanel.setBorder(new EmptyBorder(10, 5, 5, 5));
+        // =====================================================================
+        // TAB 1: BROWSE RESOURCES
+        // =====================================================================
+        JPanel resourcePanel = new JPanel(new BorderLayout(12, 12));
+        resourcePanel.setBackground(UITheme.BG_CARD);
+        resourcePanel.setBorder(new EmptyBorder(14, 14, 14, 14));
 
-        // Filter Bar
-        JPanel filterBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
-        filterBar.add(new JLabel("Search Name/Location:"));
+        // Modern Filter Bar
+        JPanel filterBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 6));
+        filterBar.setOpaque(false);
+
+        JLabel searchLbl = new JLabel("Search Location/Name:");
+        searchLbl.setFont(UITheme.FONT_BOLD);
+        searchLbl.setForeground(UITheme.TEXT_MAIN);
+        filterBar.add(searchLbl);
         filterBar.add(searchField);
-        filterBar.add(new JLabel("Category:"));
+
+        JLabel typeLbl = new JLabel("Category:");
+        typeLbl.setFont(UITheme.FONT_BOLD);
+        typeLbl.setForeground(UITheme.TEXT_MAIN);
+        filterBar.add(typeLbl);
+
+        typeFilterCombo.setFont(UITheme.FONT_REGULAR);
+        typeFilterCombo.setBackground(Color.WHITE);
+        typeFilterCombo.setPreferredSize(new Dimension(140, 34));
         filterBar.add(typeFilterCombo);
-        JButton filterBtn = new JButton("Filter");
-        JButton resetFilterBtn = new JButton("Reset");
+
+        JButton filterBtn = UITheme.createPrimaryButton("Filter");
+        JButton resetFilterBtn = UITheme.createSecondaryButton("Reset");
+        filterBtn.setPreferredSize(new Dimension(85, 34));
+        resetFilterBtn.setPreferredSize(new Dimension(85, 34));
         filterBar.add(filterBtn);
         filterBar.add(resetFilterBtn);
+
         resourcePanel.add(filterBar, BorderLayout.NORTH);
 
         resourceModel = new DefaultTableModel(new Object[]{
@@ -89,29 +96,48 @@ public class UserFrame extends JFrame {
             }
         };
         resourceTable = new JTable(resourceModel);
-        resourceTable.setRowHeight(24);
-        resourceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        resourcePanel.add(new JScrollPane(resourceTable), BorderLayout.CENTER);
+        UITheme.styleTable(resourceTable);
+
+        JScrollPane resScrollPane = new JScrollPane(resourceTable);
+        resScrollPane.setBorder(BorderFactory.createLineBorder(UITheme.BORDER));
+        resScrollPane.getViewport().setBackground(Color.WHITE);
+        resourcePanel.add(resScrollPane, BorderLayout.CENTER);
 
         // Resource Actions
-        JPanel resourceActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
-        JButton bookBtn = new JButton("Book Selected Resource...");
-        bookBtn.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        JButton refreshResBtn = new JButton("Refresh");
+        JPanel resourceActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 6));
+        resourceActions.setOpaque(false);
+        JButton refreshResBtn = UITheme.createSecondaryButton("↻ Refresh");
+        JButton bookBtn = UITheme.createPrimaryButton("+ Book Selected Resource...");
+        bookBtn.setPreferredSize(new Dimension(220, 36));
+        refreshResBtn.setPreferredSize(new Dimension(100, 36));
+
         resourceActions.add(refreshResBtn);
         resourceActions.add(bookBtn);
         resourcePanel.add(resourceActions, BorderLayout.SOUTH);
 
         tabbedPane.addTab("Browse Resources", resourcePanel);
 
-        // --- TAB 2: MY BOOKINGS ---
-        JPanel myBookingsPanel = new JPanel(new BorderLayout(10, 10));
-        myBookingsPanel.setBorder(new EmptyBorder(10, 5, 5, 5));
+        // =====================================================================
+        // TAB 2: MY BOOKINGS
+        // =====================================================================
+        JPanel myBookingsPanel = new JPanel(new BorderLayout(12, 12));
+        myBookingsPanel.setBackground(UITheme.BG_CARD);
+        myBookingsPanel.setBorder(new EmptyBorder(14, 14, 14, 14));
 
-        JPanel bookingsFilterBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
-        bookingsFilterBar.add(new JLabel("Filter by Status:"));
+        JPanel bookingsFilterBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 6));
+        bookingsFilterBar.setOpaque(false);
+        JLabel statusLbl = new JLabel("Filter by Status:");
+        statusLbl.setFont(UITheme.FONT_BOLD);
+        statusLbl.setForeground(UITheme.TEXT_MAIN);
+        bookingsFilterBar.add(statusLbl);
+
+        statusFilterCombo.setFont(UITheme.FONT_REGULAR);
+        statusFilterCombo.setBackground(Color.WHITE);
+        statusFilterCombo.setPreferredSize(new Dimension(140, 34));
         bookingsFilterBar.add(statusFilterCombo);
-        JButton refreshBookingsBtn = new JButton("Refresh");
+
+        JButton refreshBookingsBtn = UITheme.createSecondaryButton("↻ Refresh");
+        refreshBookingsBtn.setPreferredSize(new Dimension(100, 34));
         bookingsFilterBar.add(refreshBookingsBtn);
         myBookingsPanel.add(bookingsFilterBar, BorderLayout.NORTH);
 
@@ -124,18 +150,24 @@ public class UserFrame extends JFrame {
             }
         };
         myBookingsTable = new JTable(myBookingsModel);
-        myBookingsTable.setRowHeight(24);
-        myBookingsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        myBookingsPanel.add(new JScrollPane(myBookingsTable), BorderLayout.CENTER);
+        UITheme.styleTable(myBookingsTable);
 
-        JPanel myBookingsActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
-        JButton cancelBookingBtn = new JButton("Cancel Selected Booking");
+        JScrollPane bookScrollPane = new JScrollPane(myBookingsTable);
+        bookScrollPane.setBorder(BorderFactory.createLineBorder(UITheme.BORDER));
+        bookScrollPane.getViewport().setBackground(Color.WHITE);
+        myBookingsPanel.add(bookScrollPane, BorderLayout.CENTER);
+
+        JPanel myBookingsActions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 6));
+        myBookingsActions.setOpaque(false);
+        JButton cancelBookingBtn = UITheme.createDangerButton("✕ Cancel Selected Booking");
+        cancelBookingBtn.setPreferredSize(new Dimension(200, 36));
         myBookingsActions.add(cancelBookingBtn);
         myBookingsPanel.add(myBookingsActions, BorderLayout.SOUTH);
 
         tabbedPane.addTab("My Bookings", myBookingsPanel);
 
-        root.add(tabbedPane, BorderLayout.CENTER);
+        bodyPanel.add(tabbedPane, BorderLayout.CENTER);
+        root.add(bodyPanel, BorderLayout.CENTER);
         setContentPane(root);
 
         // Action Listeners
@@ -241,67 +273,98 @@ public class UserFrame extends JFrame {
             return;
         }
 
-        // Build Booking Dialog
-        JDialog dialog = new JDialog(this, "Book Resource: " + resource.getName(), true);
-        dialog.setSize(440, 380);
+        // Build Modern Booking Dialog
+        JDialog dialog = new JDialog(this, "Book Facility — " + resource.getName(), true);
+        dialog.setSize(480, 420);
         dialog.setLocationRelativeTo(this);
-        dialog.setLayout(new BorderLayout(10, 10));
+        dialog.setLayout(new BorderLayout());
 
-        JPanel form = new JPanel(new GridBagLayout());
-        form.setBorder(new EmptyBorder(15, 20, 10, 20));
+        JPanel card = UITheme.createCard();
+        card.setLayout(new GridBagLayout());
         GridBagConstraints g = new GridBagConstraints();
-        g.insets = new Insets(6, 6, 6, 6);
+        g.insets = new Insets(8, 8, 8, 8);
         g.fill = GridBagConstraints.HORIZONTAL;
 
         // Resource details
         g.gridx = 0; g.gridy = 0;
-        form.add(new JLabel("Selected Resource:"), g);
+        JLabel selLbl = new JLabel("FACILITY:");
+        selLbl.setFont(UITheme.FONT_BOLD);
+        selLbl.setForeground(UITheme.TEXT_MUTED);
+        card.add(selLbl, g);
+
         g.gridx = 1;
         JLabel resNameLabel = new JLabel(resource.getName() + " (" + resource.getLocation() + ")");
-        resNameLabel.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        form.add(resNameLabel, g);
+        resNameLabel.setFont(UITheme.FONT_TITLE);
+        resNameLabel.setForeground(UITheme.PRIMARY);
+        card.add(resNameLabel, g);
 
         // Date field
         g.gridx = 0; g.gridy = 1;
-        form.add(new JLabel("Date (YYYY-MM-DD):"), g);
+        JLabel dateLbl = new JLabel("DATE (YYYY-MM-DD):");
+        dateLbl.setFont(UITheme.FONT_BOLD);
+        dateLbl.setForeground(UITheme.TEXT_MUTED);
+        card.add(dateLbl, g);
+
         g.gridx = 1;
-        JTextField dateField = new JTextField(LocalDate.now().plusDays(1).toString(), 12);
-        form.add(dateField, g);
+        UITheme.ModernTextField dateField = new UITheme.ModernTextField(LocalDate.now().plusDays(1).toString(), 12);
+        card.add(dateField, g);
 
         // Start Time
         g.gridx = 0; g.gridy = 2;
-        form.add(new JLabel("Start Time:"), g);
+        JLabel startLbl = new JLabel("START TIME:");
+        startLbl.setFont(UITheme.FONT_BOLD);
+        startLbl.setForeground(UITheme.TEXT_MUTED);
+        card.add(startLbl, g);
+
         g.gridx = 1;
         JComboBox<String> startCombo = new JComboBox<>(new String[]{
                 "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"
         });
+        startCombo.setFont(UITheme.FONT_REGULAR);
+        startCombo.setBackground(Color.WHITE);
         startCombo.setSelectedItem("10:00");
-        form.add(startCombo, g);
+        card.add(startCombo, g);
 
         // End Time
         g.gridx = 0; g.gridy = 3;
-        form.add(new JLabel("End Time:"), g);
+        JLabel endLbl = new JLabel("END TIME:");
+        endLbl.setFont(UITheme.FONT_BOLD);
+        endLbl.setForeground(UITheme.TEXT_MUTED);
+        card.add(endLbl, g);
+
         g.gridx = 1;
         JComboBox<String> endCombo = new JComboBox<>(new String[]{
                 "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"
         });
+        endCombo.setFont(UITheme.FONT_REGULAR);
+        endCombo.setBackground(Color.WHITE);
         endCombo.setSelectedItem("12:00");
-        form.add(endCombo, g);
+        card.add(endCombo, g);
 
         // Purpose
         g.gridx = 0; g.gridy = 4;
-        form.add(new JLabel("Purpose:"), g);
-        g.gridx = 1;
-        JTextField purposeField = new JTextField(15);
-        form.add(purposeField, g);
+        JLabel purpLbl = new JLabel("PURPOSE:");
+        purpLbl.setFont(UITheme.FONT_BOLD);
+        purpLbl.setForeground(UITheme.TEXT_MUTED);
+        card.add(purpLbl, g);
 
-        dialog.add(form, BorderLayout.CENTER);
+        g.gridx = 1;
+        UITheme.ModernTextField purposeField = new UITheme.ModernTextField(15);
+        card.add(purposeField, g);
+
+        JPanel contentWrapper = new JPanel(new BorderLayout());
+        contentWrapper.setBackground(UITheme.BG_APP);
+        contentWrapper.setBorder(new EmptyBorder(16, 16, 8, 16));
+        contentWrapper.add(card, BorderLayout.CENTER);
+        dialog.add(contentWrapper, BorderLayout.CENTER);
 
         // Dialog buttons
-        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
-        JButton cancelBtn = new JButton("Cancel");
-        JButton confirmBtn = new JButton("Submit Request");
-        confirmBtn.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 14));
+        btnPanel.setBackground(UITheme.BG_APP);
+        JButton cancelBtn = UITheme.createSecondaryButton("Cancel");
+        JButton confirmBtn = UITheme.createPrimaryButton("Submit Booking Request");
+        confirmBtn.setPreferredSize(new Dimension(190, 36));
+        cancelBtn.setPreferredSize(new Dimension(90, 36));
 
         cancelBtn.addActionListener(e -> dialog.dispose());
 

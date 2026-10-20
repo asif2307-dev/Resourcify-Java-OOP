@@ -5,7 +5,7 @@ import javax.swing.UIManager;
 
 public class Main {
     public static void main(String[] args) {
-        // Set native system look and feel for a clean, professional OS-integrated GUI
+        UITheme.applySystemTweaks();
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ignored) {
